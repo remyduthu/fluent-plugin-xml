@@ -63,9 +63,8 @@ module Fluent
           end
 
           yield(time, record)
-        rescue Exception => e
-          $log.warn 'XML parser error: ', e
-          $log.debug_backtrace(e.backtrace)
+        rescue StandardError
+          yield(nil, nil)
         end
       end
 
