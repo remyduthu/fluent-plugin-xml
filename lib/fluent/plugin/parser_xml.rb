@@ -14,7 +14,7 @@
 # limitations under the License.
 
 require 'fluent/plugin/parser'
-require 'rexml/document'
+require 'nokogiri'
 
 module Fluent
   module Plugin
@@ -36,7 +36,7 @@ module Fluent
       def parse(text)
         begin
           # Open the XML document
-          doc = REXML::Document.new(text)
+          doc = Nokogiri.XML(text)
 
           # Create an empty record which assigns default values for missing
           # keys. See: https://stackoverflow.com/a/3339168.
@@ -88,13 +88,14 @@ module Fluent
       end
 
       def get_field_value(doc, xpath)
-        element = doc.elements[xpath[0]]
-        return if element.nil?
+        begin
+          elements = doc.xpath(xpath[0])
+          throw if elements.nil?
 
-        attribute = element.attributes[xpath[1]]
-        return if attribute.nil?
-
-        return attribute
+          return elements.first[xpath[1]]
+        rescue StandardError
+          return
+        end
       end
 
       def deep_each_pair(hash, parents = [])
