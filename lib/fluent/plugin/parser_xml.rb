@@ -37,6 +37,7 @@ module Fluent
         begin
           # Open the XML document
           doc = Nokogiri.XML(text)
+          doc.remove_namespaces!
 
           # Create an empty record which assigns default values for missing
           # keys. See: https://stackoverflow.com/a/3339168.
